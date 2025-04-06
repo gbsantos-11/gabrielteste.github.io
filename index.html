@@ -1,103 +1,33 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <title>Mini CRM</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f4f4f4;
-    }
-    h1 {
-      text-align: center;
-    }
-    form {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 400px;
-      margin: auto;
-      box-shadow: 0 0 10px #ccc;
-    }
-    input, select, button {
-      display: block;
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      font-size: 16px;
-    }
-    .cliente-lista {
-      margin-top: 30px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificação de Teste</title>
 </head>
 <body>
-  <h1>Mini CRM</h1>
-  <form id="formCliente">
-    <input type="text" id="nome" placeholder="Nome do cliente" required />
-    <input type="tel" id="numero" placeholder="Número com DDD (ex: 11999999999)" required />
-    
-    <select id="clienteBom">
-      <option value="sim">Cliente bom</option>
-      <option value="nao">Cliente ruim</option>
-    </select>
-    
-    <select id="interessado">
-      <option value="sim">Interessado</option>
-      <option value="nao">Não interessado</option>
-    </select>
-    
-    <select id="comprou">
-      <option value="sim">Já comprou</option>
-      <option value="nao">Não comprou</option>
-    </select>
+    <h1>Notificação em JavaScript</h1>
+    <button id="notifyBtn">Enviar Notificação</button>
 
-    <button type="submit">Cadastrar cliente</button>
-  </form>
+    <script>
+        // Função para solicitar permissão e enviar notificação
+        function sendNotification() {
+            // Verifica se a permissão já foi concedida
+            if (Notification.permission === "granted") {
+                new Notification("Aqui está a sua notificação!");
+            } 
+            // Caso contrário, solicita permissão
+            else if (Notification.permission !== "denied" || Notification.permission === "default") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("Aqui está a sua notificação!");
+                    }
+                });
+            }
+        }
 
-  <script>
-    const form = document.getElementById("formCliente");
-    let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const nome = document.getElementById("nome").value;
-      const numero = document.getElementById("numero").value;
-      const clienteBom = document.getElementById("clienteBom").value;
-      const interessado = document.getElementById("interessado").value;
-      const comprou = document.getElementById("comprou").value;
-
-      const cliente = { nome, numero, clienteBom, interessado, comprou };
-      clientes.push(cliente);
-      localStorage.setItem("clientes", JSON.stringify(clientes));
-      alert("Cliente cadastrado!");
-
-      form.reset();
-    });
-
-    // Pedir permissão pra mostrar notificação
-    Notification.requestPermission();
-
-    setInterval(() => {
-      if (Notification.permission === "granted" && clientes.length > 0) {
-        const cliente = clientes[Math.floor(Math.random() * clientes.length)];
-        const msg = `Bora mandar msg pro ${cliente.nome}?`;
-
-        const notificacao = new Notification("Mini CRM", {
-          body: msg,
-        });
-
-        const texto = encodeURIComponent(`Oi ${cliente.nome}, tudo bem? Estou passando pra saber se ainda tem interesse!`);
-        const numero = cliente.numero;
-        const link = `https://wa.me/55${numero}?text=${texto}`;
-
-        notificacao.onclick = () => {
-          window.open(link, "_blank");
-        };
-      }
-    }, 4000);
-  </script>
+        // Evento para o botão
+        document.getElementById("notifyBtn").addEventListener("click", sendNotification);
+    </script>
 </body>
 </html>
